@@ -112,3 +112,12 @@ button:hover:not(:disabled) {
   font-size: 15px;
   line-height: 1.5;
 }
+
+input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  font-size: 13px;
+  background: #fafafa;
+}

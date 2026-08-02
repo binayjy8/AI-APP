@@ -3,6 +3,7 @@ import './App.css';
 
 function App() {
   const [document, setDocument] = useState('');
+  const [pdfFile, setPdfFile] = useState(null);
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [loading, setLoading] = useState(false);
@@ -15,11 +16,26 @@ function App() {
     setAnswer('');
 
     try {
-      const res = await fetch('https://ai-app-ten-dusky.vercel.app/api/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ document, question }),
-      });
+      let res;
+
+      if (pdfFile) {
+        // PDF upload path
+        const formData = new FormData();
+        formData.append('pdfFile', pdfFile);
+        formData.append('question', question);
+
+        res = await fetch('https://ai-app-ten-dusky.vercel.app/api/ask-pdf', {
+          method: 'POST',
+          body: formData,
+        });
+      } else {
+        // Plain text path
+        res = await fetch('https://ai-app-ten-dusky.vercel.app/api/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ document, question }),
+        });
+      }
 
       const data = await res.json();
 
@@ -39,16 +55,27 @@ function App() {
     <div className="app-container">
       <div className="card">
         <h1>📄 Document Q&A</h1>
-        <p className="subtitle">Paste any text, ask a question, get an answer grounded in that document only.</p>
+        <p className="subtitle">Paste text or upload a PDF, ask a question, get a grounded answer.</p>
 
         <form onSubmit={handleSubmit}>
-          <label>Document</label>
-          <textarea
-            value={document}
-            onChange={(e) => setDocument(e.target.value)}
-            rows={8}
-            placeholder="Paste your document text here..."
+          <label>Upload PDF (optional)</label>
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={(e) => setPdfFile(e.target.files[0] || null)}
           />
+
+          {!pdfFile && (
+            <>
+              <label>Or paste document text</label>
+              <textarea
+                value={document}
+                onChange={(e) => setDocument(e.target.value)}
+                rows={8}
+                placeholder="Paste your document text here..."
+              />
+            </>
+          )}
 
           <label>Question</label>
           <input
@@ -58,7 +85,7 @@ function App() {
             placeholder="Ask something about the document..."
           />
 
-          <button type="submit" disabled={loading || !document || !question}>
+          <button type="submit" disabled={loading || (!document && !pdfFile) || !question}>
             {loading ? 'Thinking...' : 'Ask'}
           </button>
         </form>
