@@ -15,7 +15,7 @@ function App() {
     setAnswer('');
 
     try {
-      const res = await fetch('https://ai-app-backend.vercel.app/api/ask', {
+      const res = await fetch('https://ai-app-ten-dusky.vercel.app/api/ask', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ document, question }),
