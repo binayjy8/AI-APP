@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
-const pdfParse = require('pdf-parse/lib/pdf-parse.js');
+const pdfParse = require('pdf-parse');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
