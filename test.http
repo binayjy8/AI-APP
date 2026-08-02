@@ -1,4 +1,4 @@
-POST http://localhost:5000/api/ask
+POST https://ai-app-ten-dusky.vercel.app/api/ask
 Content-Type: application/json
 
 {

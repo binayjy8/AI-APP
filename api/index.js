@@ -1,9 +1,12 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const multer = require('multer');
+const pdfParse = require('pdf-parse');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app = express();
+const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(cors({
   origin: '*',
@@ -45,6 +48,30 @@ app.post('/api/ask', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Something went wrong generating the answer' });
+  }
+});
+
+app.post('/api/ask-pdf', upload.single('pdfFile'), async (req, res) => {
+  try {
+    const { question } = req.body;
+
+    if (!req.file || !question) {
+      return res.status(400).json({ error: 'A PDF file and question are both required' });
+    }
+
+    const pdfData = await pdfParse(req.file.buffer);
+    const document = pdfData.text;
+
+    if (!document || document.trim().length === 0) {
+      return res.status(400).json({ error: 'Could not extract any text from this PDF' });
+    }
+
+    const answer = await askQuestion(document, question);
+    res.json({ answer });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong processing the PDF' });
   }
 });
 
