@@ -1,0 +1,7 @@
+POST http://localhost:5000/api/ask
+Content-Type: application/json
+
+{
+  "document": "Our company TechNova was founded in 2019. TaskFlow has 50000 users.",
+  "question": "How many users does TaskFlow have?"
+}
